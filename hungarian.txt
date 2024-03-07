@@ -1,0 +1,72 @@
+# ハンガリアンアルゴリズム
+Procedure HUNGARIAN(n, w; mate)
+    # 初期化
+    (1) for v ∈ V do mate(v) ← 0 od  # すべての頂点に対して初期化
+    (2) for i = 1 to n do 
+            ui ← max{wij : j = 1,...,n}; 
+            vi ← 0 
+        od  # uiとviの初期化
+    (3) nrex ← n;  # 未解決の頂点数
+
+    # メインループ
+    (4) while nrex != 0 do
+        (5) for i = 1 to n do 
+                m(i) ← false; 
+                p(i) ← 0; 
+                δi ← ∞ 
+            od  # 変数のリセット
+        (6) aug ← false; 
+            Q ← {i ∈ S : mate(i)=0};  # Qの初期化
+
+        # 探索と更新
+        (7) repeat
+            (8) remove an arbitrary vertex i from Q; 
+                m(i) ← true; 
+                j ← 1;
+            (9) while aug = false and j ≤ n do
+                (10) if mate(i) != j
+                    (11) then if ui + vj − wij < δj
+                        (12) then δj ← ui + vj − wij ; 
+                            p(j) ← i;
+                        (13) if δj = 0
+                            (14) then if mate(j')=0
+                                (15) then AUGMENT(mate, p, j'; mate);
+                                    (16) aug ← true; 
+                                    nrex ← nrex − 1
+                            (17) else Q ← Q ∪ mate(j')}
+                        (18) fi
+                    (19) fi
+                (20) fi
+                (21) fi
+                (22) j ← j + 1
+            (23) od
+
+            # 更新処理
+            (24) if aug = false and Q = ∅
+                (25) then J ← {i ∈ S : m(i) = true}; 
+                    K ← {j' ∈ T : δj = 0};
+                (26) δ ← min{δj : j' ∈ T \ K};
+                (27) for i ∈ J do ui ← ui − δ od
+                (28) for j' ∈ K do vj ← vj + δ od
+                (29) for j' ∈ T \ K do δj ← δj − δ od
+                (30) X ← {j' ∈ T \ K : δj = 0};
+                (31) if mate(j') != 0 for all j' ∈ X
+                    (32) then for j' ∈ X do Q ← Q ∪ {mate(j')} od
+                (33) else choose j' ∈ X with mate(j') = 0;
+                    (34) AUGMENT(mate, p, j'; mate);
+                    (35) aug ← true; 
+                    nrex ← nrex − 1
+                (36) fi
+            (37) fi
+        (38) until aug = true
+    (39) od
+
+# 増加パスの見つけ方
+Procedure AUGMENT(mate, p, j'; mate)
+    (1) repeat
+        (2) i ← p(j); 
+            mate(j') ← i; 
+            next ← mate(i); 
+            mate(i) ← j';
+        (3) if next != 0 then j' ← next fi
+    (4) until next = 0
